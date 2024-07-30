@@ -6,21 +6,28 @@ import 'package:studentprovider/provider/provider.dart';
 import 'package:studentprovider/student_model.dart';
 import 'package:studentprovider/styles/styles.dart';
 import 'package:studentprovider/widget/custom_textformfields.dart';
-import 'package:studentprovider/widget/tabar.dart';
 
-class AddScreen extends StatelessWidget {
-  AddScreen({super.key});
+class EditScreen extends StatelessWidget {
+  final StudentsModel studentt;
+
+  EditScreen({super.key, required this.studentt});
 
   final formKey = GlobalKey<FormState>();
-  final nameController = TextEditingController();
-  final ageController = TextEditingController();
-  final registerNoController = TextEditingController();
-  final contactController = TextEditingController();
-  String? imagesImg;
 
   @override
   Widget build(BuildContext context) {
-    //final provider = Provider.of<;
+    final imageprovider = Provider.of<EditingImageprovider>(context);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (imageprovider.imagePath != studentt.studentPhoto) {
+        imageprovider.initializeImagePath(studentt.studentPhoto ?? '');
+      }
+    });
+    final nameController = TextEditingController(text: studentt.studentName);
+    final ageController = TextEditingController(text: studentt.studentAge);
+    final registerNoController =
+        TextEditingController(text: studentt.studentRegNo);
+    final contactController =
+        TextEditingController(text: studentt.studentContactNo);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: themecode,
@@ -43,26 +50,27 @@ class AddScreen extends StatelessWidget {
                     await pickImage(context);
                   },
                   child: Container(
-                      width: 120,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.grey.withOpacity(0.5),
-                      ),
-                      child: Consumer<ImageProviderImg>(
-                          builder: (context, imageprovider, _) {
-                        return imageprovider.imgPath != null
-                            ? ClipOval(
-                                child: Image.file(
-                                File(imageprovider.imgPath!),
-                                fit: BoxFit.cover,
-                              ))
-                            : const Icon(
-                                Icons.add_a_photo_outlined,
-                                size: 60,
-                                color: Colors.white,
-                              );
-                      })),
+                    width: 120,
+                    height: 120,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.grey.withOpacity(0.5),
+                    ),
+                    child: Consumer<EditingImageprovider>(
+                        builder: (context, imageprovider, _) {
+                      return imageprovider.imagePath != null
+                          ? ClipOval(
+                              child: Image.file(
+                              File(imageprovider.imagePath!),
+                              fit: BoxFit.cover,
+                            ))
+                          : const Icon(
+                              Icons.add_a_photo_outlined,
+                              size: 60,
+                              color: Colors.white,
+                            );
+                    }),
+                  ),
                 ),
                 const SizedBox(height: 15),
                 CustomTextFormFields(
@@ -117,11 +125,14 @@ class AddScreen extends StatelessWidget {
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        if (formKey.currentState!.validate()) {
-                          addStudentDetails(context);
-                        }
+                        editStudent(
+                            context,
+                            nameController.text.trim(),
+                            ageController.text.trim(),
+                            registerNoController.text.trim(),
+                            contactController.text.trim());
                       },
-                      child: const Text("SAVE"),
+                      child: const Text("UPDATE"),
                     ),
                   ],
                 ),
@@ -133,42 +144,43 @@ class AddScreen extends StatelessWidget {
     );
   }
 
+  void editStudent(BuildContext context, String name, String age, String regno,
+      String contactno) async {
+    if (formKey.currentState!.validate()) {
+      studentt.studentName = name;
+      studentt.studentAge = age;
+      studentt.studentRegNo = regno;
+      studentt.studentContactNo = contactno;
+      studentt.studentPhoto =
+          Provider.of<EditingImageprovider>(context, listen: false).imagePath;
+      Provider.of<StudentProvider>(context, listen: false)
+          .updateDetails(studentt);
+      Navigator.of(context).pop();
+    }
+  }
+
   Future<void> pickImage(BuildContext context) async {
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
-      // ignore: use_build_context_synchronously
-      Provider.of<ImageProviderImg>(context, listen: false)
-          .setImage(pickedFile.path);
-    }
-  }
-
-  void addStudentDetails(BuildContext context) {
-    if (formKey.currentState!.validate()) {
-      final StudentsModel student = StudentsModel(
-        studentName: nameController.text,
-        studentAge: ageController.text,
-        studentRegNo: registerNoController.text,
-        studentContactNo: contactController.text,
-        studentPhoto:
-            Provider.of<ImageProviderImg>(context, listen: false).imgPath ?? '',
-      );
-      Provider.of<StudentProvider>(context, listen: false)
-          .addStudentadd(student);
-      Provider.of<ImageProviderImg>(context, listen: false).setImage(null);
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const TabBarScreen()),
-      );
+      Provider.of<EditingImageprovider>(context, listen: false)
+          .setImagePath(pickedFile.path);
     }
   }
 }
 
-class ImageProviderImg extends ChangeNotifier {
-  String? _imgPath;
-  String? get imgPath => _imgPath;
-  void setImage(String? path) {
-    _imgPath = path;
+class EditingImageprovider extends ChangeNotifier {
+  String? _imagePath;
+
+  String? get imagePath => _imagePath;
+
+  void setImagePath(String? path) {
+    _imagePath = path;
+    notifyListeners();
+  }
+
+  void initializeImagePath(String path) {
+    _imagePath = path;
     notifyListeners();
   }
 }

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:studentprovider/screens/add_screen.dart';
 import 'package:studentprovider/screens/gridview_screen.dart';
+import 'package:studentprovider/screens/home_screen.dart';
 import 'package:studentprovider/screens/search_screen.dart';
 import 'package:studentprovider/styles/styles.dart';
-
 
 class TabBarScreen extends StatelessWidget {
   const TabBarScreen({super.key});
@@ -75,20 +75,6 @@ class TabBarScreen extends StatelessWidget {
             floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
           );
         },
-      ),
-    );
-  }
-}
-
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        "Welcome to the Home Page",
-        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
       ),
     );
   }
