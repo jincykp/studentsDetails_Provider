@@ -14,55 +14,75 @@ class HomeScreen extends StatelessWidget {
     final studentProvider = Provider.of<StudentProvider>(context);
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemBuilder: (context, index) {
-                final StudentsModel student = studentProvider.student[index];
-                return Card(
-                  color: listTilecolor,
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => FullViewScreen(
-                                    student: student,
-                                  )));
-                    },
-                    child: ListTile(
-                      title: Text(student.studentName!),
-                      subtitle: Text(student.studentRegNo!),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
+      child: studentProvider.student.isEmpty
+          ? Center(
+              child: Text(
+                'Add Student Details',
+                style: TextStyle(fontSize: 20, color: Colors.grey),
+              ),
+            )
+          : Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    itemBuilder: (context, index) {
+                      final StudentsModel student =
+                          studentProvider.student[index];
+                      return Card(
+                        color: listTilecolor,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => FullViewScreen(
+                                  student: student,
+                                ),
+                              ),
+                            );
+                          },
+                          child: ListTile(
+                            title: Text(
+                              student.studentName!,
+                              style: const TextStyle(
+                                color: iconsColor,
+                                fontWeight: studentfont,
+                              ),
+                            ),
+                            subtitle: Text(student.studentRegNo!),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
                                         builder: (context) =>
-                                            EditScreen(studentt: student)));
-                              },
-                              icon: const Icon(Icons.edit)),
-                          IconButton(
-                              onPressed: () {
-                                showDeleteDialog(
-                                    context, studentProvider, student);
-                              },
-                              icon: const Icon(Icons.delete)),
-                        ],
-                      ),
-                    ),
+                                            EditScreen(studentt: student),
+                                      ),
+                                    );
+                                  },
+                                  icon: const Icon(Icons.edit),
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    showDeleteDialog(
+                                        context, studentProvider, student);
+                                  },
+                                  icon: const Icon(Icons.delete),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                    itemCount: studentProvider.student.length,
                   ),
-                );
-              },
-              itemCount: studentProvider.student.length,
+                ),
+              ],
             ),
-          )
-        ],
-      ),
     );
   }
 

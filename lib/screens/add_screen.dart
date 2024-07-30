@@ -20,7 +20,6 @@ class AddScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //final provider = Provider.of<;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: themecode,
@@ -116,12 +115,17 @@ class AddScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ElevatedButton(
+                      style: const ButtonStyle(
+                          backgroundColor: MaterialStatePropertyAll(themecode)),
                       onPressed: () {
                         if (formKey.currentState!.validate()) {
                           addStudentDetails(context);
                         }
                       },
-                      child: const Text("SAVE"),
+                      child: const Text(
+                        "SAVE",
+                        style: TextStyle(color: iconsColor),
+                      ),
                     ),
                   ],
                 ),
@@ -137,7 +141,6 @@ class AddScreen extends StatelessWidget {
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
-      // ignore: use_build_context_synchronously
       Provider.of<ImageProviderImg>(context, listen: false)
           .setImage(pickedFile.path);
     }

@@ -124,6 +124,9 @@ class EditScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ElevatedButton(
+                      style: const ButtonStyle(
+                        backgroundColor: MaterialStatePropertyAll(themecode),
+                      ),
                       onPressed: () {
                         editStudent(
                             context,
@@ -132,7 +135,10 @@ class EditScreen extends StatelessWidget {
                             registerNoController.text.trim(),
                             contactController.text.trim());
                       },
-                      child: const Text("UPDATE"),
+                      child: const Text(
+                        "UPDATE",
+                        style: TextStyle(color: iconsColor),
+                      ),
                     ),
                   ],
                 ),
