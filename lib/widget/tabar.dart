@@ -49,7 +49,7 @@ class TabBarScreen extends StatelessWidget {
             body: const TabBarView(
               children: [
                 HomeScreen(),
-                SeacrchScreen(),
+                SearchScreen(),
                 GridViewScreen(),
               ],
             ),

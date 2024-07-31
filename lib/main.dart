@@ -3,7 +3,7 @@ import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import 'package:studentprovider/provider/provider.dart';
 import 'package:studentprovider/screens/add_screen.dart';
-import 'package:studentprovider/screens/edit_Screen.dart';
+import 'package:studentprovider/screens/edit_screen.dart';
 import 'package:studentprovider/screens/search_screen.dart';
 import 'package:studentprovider/student_model.dart';
 import 'package:studentprovider/widget/tabar.dart';

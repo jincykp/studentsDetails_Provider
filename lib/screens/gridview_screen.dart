@@ -1,3 +1,4 @@
+import 'dart:io'; // Import the dart:io package for File
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:studentprovider/provider/provider.dart';
@@ -24,9 +25,6 @@ class GridViewScreen extends StatelessWidget {
               ),
               itemBuilder: (context, index) {
                 final StudentsModel student = studentProvider.student[index];
-                debugPrint(
-                    'Student Photo URL: ${student.studentPhoto}'); // Debug log
-
                 return GestureDetector(
                   onTap: () {
                     Navigator.push(
@@ -44,7 +42,7 @@ class GridViewScreen extends StatelessWidget {
                         CircleAvatar(
                           backgroundImage: student.studentPhoto != null &&
                                   student.studentPhoto!.isNotEmpty
-                              ? NetworkImage(student.studentPhoto!)
+                              ? FileImage(File(student.studentPhoto!))
                               : null,
                           radius: 40,
                           child: student.studentPhoto == null ||
@@ -55,9 +53,6 @@ class GridViewScreen extends StatelessWidget {
                                   color: Color.fromARGB(255, 82, 81, 81),
                                 )
                               : null,
-                          onBackgroundImageError: (_, __) {
-                            debugPrint('Error loading image'); // Error handling
-                          },
                         ),
                         const SizedBox(height: 10),
                         Text(

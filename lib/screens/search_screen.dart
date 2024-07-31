@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:studentprovider/provider/provider.dart';
 import 'package:studentprovider/screens/full_view_screen.dart';
 import 'package:studentprovider/student_model.dart';
-import 'package:studentprovider/styles/styles.dart';
 
-class SeacrchScreen extends StatelessWidget {
-  const SeacrchScreen({super.key});
+class SearchScreen extends StatelessWidget {
+  const SearchScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +46,8 @@ class SeacrchScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Expanded(
-              child: searchProvider.filteredStudents.isEmpty
+              child: searchProvider.filteredStudents.isEmpty &&
+                      searchProvider._searchQuery.isNotEmpty
                   ? const Center(
                       child: Text(
                         'No results found',

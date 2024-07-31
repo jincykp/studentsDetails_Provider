@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:studentprovider/provider/provider.dart';
-import 'package:studentprovider/screens/edit_Screen.dart';
+import 'package:studentprovider/screens/edit_screen.dart';
 import 'package:studentprovider/screens/full_view_screen.dart';
 import 'package:studentprovider/student_model.dart';
 import 'package:studentprovider/styles/styles.dart';
