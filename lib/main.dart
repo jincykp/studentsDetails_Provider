@@ -4,9 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:studentprovider/provider/provider.dart';
 import 'package:studentprovider/screens/add_screen.dart';
 import 'package:studentprovider/screens/edit_screen.dart';
-import 'package:studentprovider/screens/search_screen.dart';
+import 'package:studentprovider/screens/home_screen.dart';
 import 'package:studentprovider/student_model.dart';
-import 'package:studentprovider/widget/tabar.dart';
 import 'package:path_provider/path_provider.dart' as path;
 
 void main() async {
@@ -35,12 +34,12 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(create: (context) => ImageProviderImg()),
         ChangeNotifierProvider(create: (context) => EditingImageprovider()),
-        ChangeNotifierProvider(create: (context) => TabIndexProvider())
+        // ChangeNotifierProvider(create: (context) => TabIndexProvider())
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(primarySwatch: Colors.amber),
-        home: const TabBarScreen(),
+        home: const HomeScreen(),
       ),
     );
   }

@@ -53,26 +53,26 @@ class TabBarScreen extends StatelessWidget {
                 GridViewScreen(),
               ],
             ),
-            floatingActionButton: Consumer<TabIndexProvider>(
-              builder: (context, tabIndexProvider, child) {
-                return tabIndexProvider.currentIndex == 0
-                    ? FloatingActionButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => AddScreen()));
-                        },
-                        backgroundColor: themecode,
-                        child: const Icon(
-                          Icons.add,
-                          color: iconsColor,
-                        ),
-                      )
-                    : Container(); // Return an empty container when FAB is not needed
-              },
-            ),
-            floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+            // floatingActionButton: Consumer<TabIndexProvider>(
+            //   builder: (context, tabIndexProvider, child) {
+            //     return tabIndexProvider.currentIndex == 0
+            //         ? FloatingActionButton(
+            //             onPressed: () {
+            //               Navigator.push(
+            //                   context,
+            //                   MaterialPageRoute(
+            //                       builder: (context) => AddScreen()));
+            //             },
+            //             backgroundColor: themecode,
+            //             child: const Icon(
+            //               Icons.add,
+            //               color: iconsColor,
+            //             ),
+            //           )
+            //         : Container(); // Return an empty container when FAB is not needed
+            //   },
+            // ),
+            // floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
           );
         },
       ),

@@ -5,10 +5,10 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:studentprovider/provider/provider.dart';
+import 'package:studentprovider/screens/home_screen.dart';
 import 'package:studentprovider/student_model.dart';
 import 'package:studentprovider/styles/styles.dart';
 import 'package:studentprovider/widget/custom_textformfields.dart';
-import 'package:studentprovider/widget/tabar.dart';
 
 class AddScreen extends StatelessWidget {
   AddScreen({super.key});
@@ -198,7 +198,7 @@ class AddScreen extends StatelessWidget {
       Provider.of<ImageProviderImg>(context, listen: false).setImage(null);
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const TabBarScreen()),
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
       );
     }
   }
