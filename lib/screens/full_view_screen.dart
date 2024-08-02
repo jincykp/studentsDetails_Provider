@@ -1,12 +1,16 @@
 import 'dart:io';
+import 'dart:js';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:studentprovider/provider/provider.dart';
+import 'package:studentprovider/screens/edit_screen.dart';
 import 'package:studentprovider/student_model.dart';
 import 'package:studentprovider/styles/styles.dart';
 
 class FullViewScreen extends StatelessWidget {
   final StudentsModel student;
 
-  const FullViewScreen({super.key, required this.student});
+  FullViewScreen({super.key, required this.student});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +27,7 @@ class FullViewScreen extends StatelessWidget {
         print('File does not exist: ${student.studentPhoto}');
       }
     }
-
+    final studentProvider = Provider.of<StudentProvider>(context);
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -58,7 +62,7 @@ class FullViewScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 20),
                       Text(
-                        'Student Name: ${student.studentName!}',
+                        'Student Name : ${student.studentName!}',
                         style: const TextStyle(
                           color: iconsColor,
                           fontWeight: studentfont,
@@ -66,7 +70,7 @@ class FullViewScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 20),
                       Text(
-                        'Age: ${student.studentAge}',
+                        'Age : ${student.studentAge}',
                         style: const TextStyle(
                           color: iconsColor,
                           fontWeight: studentfont,
@@ -74,7 +78,7 @@ class FullViewScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 20),
                       Text(
-                        'Register Number: ${student.studentRegNo!}',
+                        'Register Number : ${student.studentRegNo!}',
                         style: const TextStyle(
                           color: iconsColor,
                           fontWeight: studentfont,
@@ -88,6 +92,35 @@ class FullViewScreen extends StatelessWidget {
                           fontWeight: studentfont,
                         ),
                       ),
+                      const SizedBox(height: 90),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        EditScreen(studentt: student),
+                                  ),
+                                );
+                              },
+                              child: const Text(
+                                "EDIT",
+                                style: TextStyle(color: iconsColor),
+                              )),
+                          ElevatedButton(
+                              onPressed: () {
+                                showDeleteDialog(
+                                    context, studentProvider, student);
+                              },
+                              child: const Text(
+                                "DELETE",
+                                style: TextStyle(color: iconsColor),
+                              ))
+                        ],
+                      )
                     ],
                   ),
                 ),
@@ -96,6 +129,32 @@ class FullViewScreen extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  void showDeleteDialog(BuildContext context, StudentProvider studentProvider,
+      StudentsModel student) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Delete'),
+          content: const Text('Are you sure you want to delete this student?'),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Cancel')),
+            TextButton(
+                onPressed: () {
+                  studentProvider.deleteDetails(student);
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Delete'))
+          ],
+        );
+      },
     );
   }
 }

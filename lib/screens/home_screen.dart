@@ -15,7 +15,7 @@ class HomeScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: studentProvider.student.isEmpty
-          ? Center(
+          ? const Center(
               child: Text(
                 'Add Student Details',
                 style: TextStyle(fontSize: 20, color: Colors.grey),
@@ -66,10 +66,7 @@ class HomeScreen extends StatelessWidget {
                                   icon: const Icon(Icons.edit),
                                 ),
                                 IconButton(
-                                  onPressed: () {
-                                    showDeleteDialog(
-                                        context, studentProvider, student);
-                                  },
+                                  onPressed: () {},
                                   icon: const Icon(Icons.delete),
                                 ),
                               ],
@@ -83,32 +80,6 @@ class HomeScreen extends StatelessWidget {
                 ),
               ],
             ),
-    );
-  }
-
-  void showDeleteDialog(BuildContext context, StudentProvider studentProvider,
-      StudentsModel student) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Delete'),
-          content: const Text('Are you sure you want to delete this student?'),
-          actions: [
-            TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('Cancel')),
-            TextButton(
-                onPressed: () {
-                  studentProvider.deleteDetails(student);
-                  Navigator.of(context).pop();
-                },
-                child: const Text('Delete'))
-          ],
-        );
-      },
     );
   }
 }
