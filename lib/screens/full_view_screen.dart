@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:js';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:studentprovider/provider/provider.dart';
@@ -14,10 +13,9 @@ class FullViewScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(
-        'Student Photo: ${student.studentPhoto}'); // Debugging line to check the image path
-
-    ImageProvider? imageProvider;
+    // Determine the image provider based on the student's photo path
+    ImageProvider imageProvider =
+        const AssetImage('assets/images.jpeg'); // Default image
 
     if (student.studentPhoto != null && student.studentPhoto!.isNotEmpty) {
       final file = File(student.studentPhoto!);
@@ -27,101 +25,100 @@ class FullViewScreen extends StatelessWidget {
         print('File does not exist: ${student.studentPhoto}');
       }
     }
+
     final studentProvider = Provider.of<StudentProvider>(context);
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Card(
-              color: listTilecolor,
-              elevation: 5,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
+            child: SizedBox(
+              height: 600,
+              child: Card(
+                color: listTilecolor,
+                elevation: 5,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Center(
-                        child: CircleAvatar(
-                          radius: 70,
-                          backgroundImage: imageProvider,
-                          child: imageProvider == null
-                              ? const Icon(
-                                  Icons.person,
-                                  size: 50,
-                                  color: iconsColor,
-                                )
-                              : null,
+                  padding: const EdgeInsets.all(16.0),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Center(
+                          child: CircleAvatar(
+                            radius: 70,
+                            backgroundImage: imageProvider,
+                            // Remove the child property to avoid showing the person icon
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        'Student Name : ${student.studentName!}',
-                        style: const TextStyle(
-                          color: iconsColor,
-                          fontWeight: studentfont,
+                        const SizedBox(height: 30),
+                        Text(
+                          'Student Name : ${student.studentName!}',
+                          style: const TextStyle(
+                            color: iconsColor,
+                            fontWeight: studentfont,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        'Age : ${student.studentAge}',
-                        style: const TextStyle(
-                          color: iconsColor,
-                          fontWeight: studentfont,
+                        const SizedBox(height: 20),
+                        Text(
+                          'Age : ${student.studentAge}',
+                          style: const TextStyle(
+                            color: iconsColor,
+                            fontWeight: studentfont,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        'Register Number : ${student.studentRegNo!}',
-                        style: const TextStyle(
-                          color: iconsColor,
-                          fontWeight: studentfont,
+                        const SizedBox(height: 20),
+                        Text(
+                          'Register Number : ${student.studentRegNo!}',
+                          style: const TextStyle(
+                            color: iconsColor,
+                            fontWeight: studentfont,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        'Contact Number : ${student.studentContactNo!}',
-                        style: const TextStyle(
-                          color: iconsColor,
-                          fontWeight: studentfont,
+                        const SizedBox(height: 20),
+                        Text(
+                          'Contact Number : ${student.studentContactNo!}',
+                          style: const TextStyle(
+                            color: iconsColor,
+                            fontWeight: studentfont,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 90),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        EditScreen(studentt: student),
-                                  ),
-                                );
-                              },
-                              child: const Text(
-                                "EDIT",
-                                style: TextStyle(color: iconsColor),
-                              )),
-                          ElevatedButton(
-                              onPressed: () {
-                                showDeleteDialog(
-                                    context, studentProvider, student);
-                              },
-                              child: const Text(
-                                "DELETE",
-                                style: TextStyle(color: iconsColor),
-                              ))
-                        ],
-                      )
-                    ],
+                        const SizedBox(height: 90),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            ElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          EditScreen(studentt: student),
+                                    ),
+                                  );
+                                },
+                                child: const Text(
+                                  "EDIT",
+                                  style: TextStyle(color: iconsColor),
+                                )),
+                            ElevatedButton(
+                                onPressed: () {
+                                  showDeleteDialog(
+                                      context, studentProvider, student);
+                                },
+                                child: const Text(
+                                  "DELETE",
+                                  style: TextStyle(color: iconsColor),
+                                ))
+                          ],
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -149,6 +146,7 @@ class FullViewScreen extends StatelessWidget {
             TextButton(
                 onPressed: () {
                   studentProvider.deleteDetails(student);
+                  Navigator.of(context).pop();
                   Navigator.of(context).pop();
                 },
                 child: const Text('Delete'))

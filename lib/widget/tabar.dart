@@ -15,7 +15,7 @@ class TabBarScreen extends StatelessWidget {
       length: 3,
       child: Builder(
         builder: (context) {
-          final TabController tabController = DefaultTabController.of(context)!;
+          final TabController tabController = DefaultTabController.of(context);
           tabController.addListener(() {
             Provider.of<TabIndexProvider>(context, listen: false)
                 .updateIndex(tabController.index);

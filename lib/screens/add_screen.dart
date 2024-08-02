@@ -1,5 +1,7 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:studentprovider/provider/provider.dart';
@@ -16,7 +18,6 @@ class AddScreen extends StatelessWidget {
   final ageController = TextEditingController();
   final registerNoController = TextEditingController();
   final contactController = TextEditingController();
-  String? imagesImg;
 
   @override
   Widget build(BuildContext context) {
@@ -37,31 +38,38 @@ class AddScreen extends StatelessWidget {
             child: Column(
               children: [
                 const SizedBox(height: 20),
-                GestureDetector(
-                  onTap: () async {
-                    await pickImage(context);
+                Consumer<ImageProviderImg>(
+                  builder: (context, imageProvider, _) {
+                    return Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        CircleAvatar(
+                          backgroundImage: imageProvider.selectedImage != null
+                              ? FileImage(imageProvider.selectedImage!)
+                              : const AssetImage('assets/images.jpeg')
+                                  as ImageProvider,
+                          radius: 60,
+                          child: imageProvider.selectedImage == null
+                              ? const SizedBox() // Remove the person icon
+                              : null,
+                        ),
+                        Positioned(
+                          bottom: -5,
+                          right: -4,
+                          child: IconButton(
+                            onPressed: () {
+                              pickImage(context);
+                            },
+                            icon: const Icon(
+                              Icons.add_a_photo_outlined,
+                              size: 30,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
                   },
-                  child: Container(
-                      width: 120,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.grey.withOpacity(0.5),
-                      ),
-                      child: Consumer<ImageProviderImg>(
-                          builder: (context, imageprovider, _) {
-                        return imageprovider.imgPath != null
-                            ? ClipOval(
-                                child: Image.file(
-                                File(imageprovider.imgPath!),
-                                fit: BoxFit.cover,
-                              ))
-                            : const Icon(
-                                Icons.add_a_photo_outlined,
-                                size: 60,
-                                color: Colors.white,
-                              );
-                      })),
                 ),
                 const SizedBox(height: 15),
                 CustomTextFormFields(
@@ -70,12 +78,18 @@ class AddScreen extends StatelessWidget {
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Name is required';
+                    } else if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
+                      return 'Name can only contain letters';
                     }
                     return null;
                   },
                 ),
                 const SizedBox(height: 15),
                 CustomTextFormFields(
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(2)
+                  ],
                   keyboardType: TextInputType.number,
                   controller: ageController,
                   hintText: "Enter Your age",
@@ -83,40 +97,56 @@ class AddScreen extends StatelessWidget {
                     if (value == null || value.isEmpty) {
                       return 'Age is required';
                     }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 15),
-                CustomTextFormFields(
-                  keyboardType: TextInputType.number,
-                  controller: registerNoController,
-                  hintText: "Enter Your RegisterNumber",
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'RegisterNumber is required';
+                    final age = int.tryParse(value);
+                    if (age == null || age < 1 || age > 99) {
+                      return 'Age must be between 1 and 99';
                     }
                     return null;
                   },
                 ),
                 const SizedBox(height: 15),
                 CustomTextFormFields(
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(6)
+                  ],
+                  keyboardType: TextInputType.number,
+                  controller: registerNoController,
+                  hintText: "Enter Your Register Number",
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Register Number is required';
+                    } else if (value.length != 6) {
+                      return 'Register Number must be 6 digits';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 15),
+                CustomTextFormFields(
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(10)
+                  ],
                   keyboardType: TextInputType.phone,
                   controller: contactController,
                   hintText: "Enter Your Contact Number",
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Contact number is required';
+                    } else if (value.length != 10) {
+                      return 'Contact number must be 10 digits';
                     }
                     return null;
                   },
                 ),
                 const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      style: const ButtonStyle(
-                          backgroundColor: MaterialStatePropertyAll(themecode)),
+                Consumer<ImageProviderImg>(
+                  builder: (context, imageProvider, _) {
+                    return ElevatedButton(
+                      style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.all(themecode)),
                       onPressed: () {
                         if (formKey.currentState!.validate()) {
                           addStudentDetails(context);
@@ -126,8 +156,8 @@ class AddScreen extends StatelessWidget {
                         "SAVE",
                         style: TextStyle(color: iconsColor),
                       ),
-                    ),
-                  ],
+                    );
+                  },
                 ),
               ],
             ),
@@ -138,23 +168,30 @@ class AddScreen extends StatelessWidget {
   }
 
   Future<void> pickImage(BuildContext context) async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      Provider.of<ImageProviderImg>(context, listen: false)
-          .setImage(pickedFile.path);
+    try {
+      final pickedFile =
+          await ImagePicker().pickImage(source: ImageSource.gallery);
+
+      if (pickedFile != null) {
+        Provider.of<ImageProviderImg>(context, listen: false)
+            .setImage(File(pickedFile.path));
+      }
+    } catch (e) {
+      log(e.toString());
     }
   }
 
   void addStudentDetails(BuildContext context) {
     if (formKey.currentState!.validate()) {
-      final StudentsModel student = StudentsModel(
+      final imageProvider =
+          Provider.of<ImageProviderImg>(context, listen: false);
+      final student = StudentsModel(
         studentName: nameController.text,
         studentAge: ageController.text,
         studentRegNo: registerNoController.text,
         studentContactNo: contactController.text,
         studentPhoto:
-            Provider.of<ImageProviderImg>(context, listen: false).imgPath ?? '',
+            imageProvider.selectedImage?.path ?? '', // Allow empty path
       );
       Provider.of<StudentProvider>(context, listen: false)
           .addStudentadd(student);
@@ -168,10 +205,12 @@ class AddScreen extends StatelessWidget {
 }
 
 class ImageProviderImg extends ChangeNotifier {
-  String? _imgPath;
-  String? get imgPath => _imgPath;
-  void setImage(String? path) {
-    _imgPath = path;
+  File? _selectedImage;
+
+  File? get selectedImage => _selectedImage;
+
+  void setImage(File? image) {
+    _selectedImage = image;
     notifyListeners();
   }
 }

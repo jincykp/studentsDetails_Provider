@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:studentprovider/provider/provider.dart';
@@ -17,23 +18,27 @@ class EditScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final imageprovider = Provider.of<EditingImageprovider>(context);
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
+
+    // Initialize the image path from the student's model
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       if (imageprovider.imagePath != studentt.studentPhoto) {
         imageprovider.initializeImagePath(studentt.studentPhoto ?? '');
       }
     });
+
     final nameController = TextEditingController(text: studentt.studentName);
     final ageController = TextEditingController(text: studentt.studentAge);
     final registerNoController =
         TextEditingController(text: studentt.studentRegNo);
     final contactController =
         TextEditingController(text: studentt.studentContactNo);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: themecode,
         foregroundColor: iconsColor,
         title: const Text(
-          "Add Student Details",
+          "Edit Student Details",
           style: TextStyle(fontWeight: fonntsStyless),
         ),
       ),
@@ -57,19 +62,19 @@ class EditScreen extends StatelessWidget {
                       color: Colors.grey.withOpacity(0.5),
                     ),
                     child: Consumer<EditingImageprovider>(
-                        builder: (context, imageprovider, _) {
-                      return imageprovider.imagePath != null
-                          ? ClipOval(
-                              child: Image.file(
-                              File(imageprovider.imagePath!),
-                              fit: BoxFit.cover,
-                            ))
-                          : const Icon(
-                              Icons.add_a_photo_outlined,
-                              size: 60,
-                              color: Colors.white,
-                            );
-                    }),
+                      builder: (context, imageprovider, _) {
+                        final image = imageprovider.imagePath != null
+                            ? FileImage(File(imageprovider.imagePath!))
+                            : const AssetImage('assets/images.jpeg')
+                                as ImageProvider;
+                        return ClipOval(
+                          child: Image(
+                            image: image,
+                            fit: BoxFit.cover,
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ),
                 const SizedBox(height: 15),
@@ -79,12 +84,18 @@ class EditScreen extends StatelessWidget {
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Name is required';
+                    } else if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
+                      return 'Name can only contain letters';
                     }
                     return null;
                   },
                 ),
                 const SizedBox(height: 15),
                 CustomTextFormFields(
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(2)
+                  ],
                   keyboardType: TextInputType.number,
                   controller: ageController,
                   hintText: "Enter Your age",
@@ -92,29 +103,45 @@ class EditScreen extends StatelessWidget {
                     if (value == null || value.isEmpty) {
                       return 'Age is required';
                     }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 15),
-                CustomTextFormFields(
-                  keyboardType: TextInputType.number,
-                  controller: registerNoController,
-                  hintText: "Enter Your RegisterNumber",
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'RegisterNumber is required';
+                    final age = int.tryParse(value);
+                    if (age == null || age < 1 || age > 99) {
+                      return 'Age must be between 1 and 99';
                     }
                     return null;
                   },
                 ),
                 const SizedBox(height: 15),
                 CustomTextFormFields(
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(6)
+                  ],
+                  keyboardType: TextInputType.number,
+                  controller: registerNoController,
+                  hintText: "Enter Your Register Number",
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Register Number is required';
+                    } else if (value.length != 6) {
+                      return 'Register Number must be 6 digits';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 15),
+                CustomTextFormFields(
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(10)
+                  ],
                   keyboardType: TextInputType.phone,
                   controller: contactController,
                   hintText: "Enter Your Contact Number",
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Contact number is required';
+                    } else if (value.length != 10) {
+                      return 'Contact number must be 10 digits';
                     }
                     return null;
                   },
@@ -159,8 +186,10 @@ class EditScreen extends StatelessWidget {
       studentt.studentContactNo = contactno;
       studentt.studentPhoto =
           Provider.of<EditingImageprovider>(context, listen: false).imagePath;
+
       Provider.of<StudentProvider>(context, listen: false)
           .updateDetails(studentt);
+
       Navigator.of(context).pop();
     }
   }

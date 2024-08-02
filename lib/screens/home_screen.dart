@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:studentprovider/provider/provider.dart';
-import 'package:studentprovider/screens/edit_screen.dart';
 import 'package:studentprovider/screens/full_view_screen.dart';
 import 'package:studentprovider/student_model.dart';
 import 'package:studentprovider/styles/styles.dart';
@@ -50,27 +49,6 @@ class HomeScreen extends StatelessWidget {
                               ),
                             ),
                             subtitle: Text(student.studentRegNo!),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            EditScreen(studentt: student),
-                                      ),
-                                    );
-                                  },
-                                  icon: const Icon(Icons.edit),
-                                ),
-                                IconButton(
-                                  onPressed: () {},
-                                  icon: const Icon(Icons.delete),
-                                ),
-                              ],
-                            ),
                           ),
                         ),
                       );
